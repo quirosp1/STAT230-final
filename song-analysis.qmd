@@ -1,0 +1,150 @@
+---
+title: "Most Streamed Spotify Songs 2024"
+authors: "Peter Quiros and Jennifer Cajas"
+format: html
+editor: visual
+---
+
+# Data
+
+[Data dictionary](https://www.kaggle.com/datasets/nelgiriyewithana/most-streamed-spotify-songs-2024)
+
+-   **Track Name**: Name of the song.
+
+-   **Album Name**: Name of the album the song belongs to.
+
+-   **Artist**: Name of the artist(s) of the song.
+
+-   **Release Date**: Date when the song was released.
+
+-   **ISRC**: International Standard Recording Code for the song.
+
+-   **All Time Rank**: Ranking of the song based on its all-time popularity.
+
+-   **Track Score**: Score assigned to the track based on various factors.
+
+-   **Spotify Streams**: Total number of streams on Spotify.
+
+-   **Spotify Playlist Count**: Number of Spotify playlists the song is included in.
+
+-   **Spotify Playlist Reach**: Reach of the song across Spotify playlists.
+
+-   **Spotify Popularity**: Popularity score of the song on Spotify.
+
+-   **YouTube Views**: Total views of the song's official video on YouTube.
+
+-   **YouTube Likes**: Total likes on the song's official video on YouTube.
+
+-   **TikTok Posts**: Number of TikTok posts featuring the song.
+
+-   **TikTok Likes**: Total likes on TikTok posts featuring the song.
+
+-   **TikTok Views**: Total views on TikTok posts featuring the song.
+
+-   **YouTube Playlist Reach**: Reach of the song across YouTube playlists.
+
+-   **Apple Music Playlist Count**: Number of Apple Music playlists the song is included in.
+
+-   **AirPlay Spins**: Number of times the song has been played on radio stations.
+
+-   **SiriusXM Spins**: Number of times the song has been played on SiriusXM.
+
+-   **Deezer Playlist Count**: Number of Deezer playlists the song is included in.
+
+-   **Deezer Playlist Reach**: Reach of the song across Deezer playlists.
+
+-   **Amazon Playlist Count**: Number of Amazon Music playlists the song is included in.
+
+-   **Pandora Streams**: Total number of streams on Pandora.
+
+-   **Pandora Track Stations**: Number of Pandora stations featuring the song.
+
+-   **Soundcloud Streams**: Total number of streams on Soundcloud.
+
+-   **Shazam Counts**: Total number of times the song has been Shazamed.
+
+-   **TIDAL Popularity**: Popularity score of the song on TIDAL.
+
+-   **Explicit Track**: Indicates whether the song contains explicit content.
+
+```{r}
+library(tidyverse)
+songs <- read_csv("data/Most Streamed Spotify Songs 2024.csv")
+```
+
+# Questions
+
+Do tracks with explicit lyrics have higher streams than ones that don't?
+
+Is there a relationship between Youtube Views and Track Score?
+
+# Descriptive Analysis
+
+## Histogram
+
+What is the distribution of the number of streams that are explicit?
+
+```{r}
+songs |>
+  group_by(`Explicit Track`) |>
+  ggplot(aes(x = `Spotify Streams`, na.rm = TRUE)) +
+  geom_histogram(bins = 50, na.rm = TRUE)
+```
+
+## Box plot
+
+What is the distribution of the number of streams that are explicit?
+
+```{r}
+songs |>
+  ggplot(aes(x = `Explicit Track`, y = `Spotify Streams`)) +
+  geom_boxplot()
+```
+
+## Scatter Plot
+
+Is there a relationship between Youtube Views and Track Score?
+
+```{r}
+songs |>
+  ggplot(aes(x = `YouTube Views`, y = `Spotify Streams` )) +
+  geom_point()
+```
+
+## Data Summariziation
+
+```{r}
+songs |>
+  summarize(mean = mean(`Spotify Streams`, na.rm = TRUE),
+            sd = sd(`Spotify Streams`, na.rm = TRUE),
+            min = min(`Spotify Streams`, na.rm = TRUE),
+            max = max(`Spotify Streams`, na.rm = TRUE))
+
+```
+
+# Inferential Statistics
+
+## T-test
+
+Do tracks with explicit lyrics have higher streams than ones that don't?
+
+```{r}
+t.test(`Spotify Streams` ~ `Explicit Track`, 
+       data = songs)
+```
+
+## Linear Regression
+
+Is there a relationship between Youtube Views and Track Score?
+
+```{r}
+yt_score <- lm(`YouTube Views` ~ `Track Score`,
+               data = songs)
+summary(yt_score)
+```
+
+# Conclusion
+
+Using a Histogram to answer the following question of What is the distribution of the number of streams that are explicit? The histogram showed that the number of explicit streams shows a right-skewed pattern, indicating that the most values are concentrated on the lower end, with fewer streams having very high counts. Using the t-Test the two values shown  of 0.04127 and p-value of 0.9671 indicate that there is not much of a difference in the average number of streams between explicit and non-explicit songs. Since the p-value is much greater than 0.05, we fail to reject the null hypothesis and conclude that any observed difference is likely due to chance.
+
+The linear regression shows that Track Score is a significant factor in predicting YouTube Views (p \< 2e-16). For every 1-point increase in Track Score, views go up by about 3.86 million on average. But the R-squared value is only 0.044, meaning Track Score explains just 4.4% of the changes in views. While the relationship is significant, it is not strong suggesting that other factors likely have a larger impact on view counts. 
