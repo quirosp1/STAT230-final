@@ -103,7 +103,7 @@ songs |>
 
 ## Scatter Plot
 
-Is there a relationship between Youtube Views and Track Score?
+Is there a relationship between Youtube Views and Spotify Streams?
 
 ```{r}
 songs |>
